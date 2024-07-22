@@ -18,7 +18,7 @@ uint8_t frame[8][12] = {
 
 void loop(){
   int i,j;
-  for(i=0;1<12;i++){
+  for(i=0;i<12;i++){
     for(j=0;j<8;j++){
       frame[j][i]=1;
       matrix.renderBitmap(frame, 8, 12);
@@ -26,8 +26,6 @@ void loop(){
       frame[j][i]=0;
       matrix.renderBitmap(frame, 8, 12);
       delay(100);
-
-
     }
   }
   
