@@ -1,0 +1,78 @@
+def print_board(board):
+    # ฟังก์ชันเพื่อพิมพ์ board ออกมาให้ดู
+    for row in board:
+        print(" ".join(str(cell) for cell in row))
+    print()
+
+def is_valid(board, row, col, num):
+    # เช็คว่า num ที่จะใส่ในตำแหน่ง (row, col) นั้นถูกต้องหรือไม่
+    
+    # เช็คในแถว row
+    for i in range(9):
+        if board[row][i] == num:
+            return False
+
+    # เช็คในคอลัมน์ col
+    for i in range(9):
+        if board[i][col] == num:
+            return False
+
+    # เช็คใน 3x3 grid
+    start_row, start_col = 3 * (row // 3), 3 * (col // 3)
+    for i in range(3):
+        for j in range(3):
+            if board[start_row + i][start_col + j] == num:
+                return False
+
+    return True
+
+def find_empty_location(board):
+    # หา location ที่เป็น 0 (ยังไม่ได้เติมค่า)
+    for row in range(9):
+        for col in range(9):
+            if board[row][col] == 0:
+                return row, col
+    return None
+
+def solve_sudoku(board):
+    # ฟังก์ชันหลักสำหรับการแก้ปัญหา Sudoku โดยใช้ DFS
+    
+    empty_location = find_empty_location(board)
+    
+    if not empty_location:
+        return True  # ถ้าไม่มีตำแหน่งว่าง แสดงว่าแก้ปัญหาได้สำเร็จแล้ว
+    
+    row, col = empty_location
+    
+    # ลองใส่ตัวเลข 1-9 ในตำแหน่งว่าง
+    for num in range(1, 10):
+        if is_valid(board, row, col, num):
+            board[row][col] = num  # ใส่ตัวเลขลงใน board
+            
+            if solve_sudoku(board):  # ถ้าสามารถแก้ปัญหาส่วนนี้ได้ ก็จบ
+                return True
+            
+            board[row][col] = 0  # ถ้าไม่สำเร็จ ให้ reset กลับไปเป็น 0 แล้วลองตัวถัดไป
+    
+    return False  # ถ้าลองครบทุกตัวแล้วไม่ได้ผล ก็ return False
+
+def read_puzzle(file_path):
+    # อ่านไฟล์ Sudoku จากไฟล์ txt และนำมาสร้างเป็น board
+    puzzle = []
+    with open(file_path, 'r') as file:
+        for line in file:
+            puzzle.append([int(num) for num in line.split()])
+    return puzzle
+
+if __name__ == "__main__":
+    # อ่าน Sudoku จากไฟล์
+    sudoku_board = read_puzzle('sudoku.txt')
+    
+    print("Sudoku Puzzle:")
+    print_board(sudoku_board)
+    
+    if solve_sudoku(sudoku_board):
+        print("Solved Sudoku:")
+        print_board(sudoku_board)
+    else:
+        print("No solution exists.")
